@@ -187,6 +187,21 @@ if (!$console->options['namespace']) {
     require_once($path);
 }
 
+// Bootstrap file must be required directly rather than from function
+// invocation to preserve any loaded globals
+if ($console->options['bootstrap']) {
+    if (!file_exists($console->options['bootstrap'])) {
+        $console->writeLn("Bootstrap file not found: {$console->options['bootstrap']}");
+        exit();
+    } else if(!is_readable($console->options['bootstrap'])) {
+        $console->writeLn("Bootstrap file not readable: {$console->options['bootstrap']}");
+        exit();
+    } else if(!@include_once($console->options['bootstrap'])) {
+        $console->writeLn("Unable to include bootstrap: {$console->options['bootstrap']}");
+        exit();
+    }
+}
+
 // Files must be required directly rather than from function
 // invocation to preserve any loaded globals
 $paths = expandPaths($console->getPaths());
